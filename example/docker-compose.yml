@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+
+  adguard:
+    container_name: adguard
+    image: adguard/adguardhome:edge
+    restart: always
+    networks:
+      - traefik
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - /services/adguard/data:/opt/adguardhome/work
+      - /services/adguard/config:/opt/adguardhome/conf
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adguard.entrypoints=websecure
+      - traefik.http.routers.adguard.rule=Host(`adguard.example.com`)
+      - traefik.http.services.adguard.loadbalancer.server.port=3000
+      - traefik.http.routers.adguard.tls=true
+      - traefik.http.routers.adguard.tls.certresolver=cfdns
+
+  adguard-updater:
+    container_name: adguard-updater
+    image: ghcr.io/willfantom/agh-updater
+    restart: always
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - /services/traefik/certs:/traefikcerts:ro
+    environment:
+      ADGUARD_USERNAME: exmaple
+      ADGUARD_PASSWORD: secretpasword
+      ADGUARD_DOMAIN: adguard.example.com
+      TRAEFIK_CERT_JSON: /traefikcerts/acme.json
+      INTERVAL: 120 #default 60
+      ADGUARD_API_SCHEME: https # defualt https
+      ADGUARD_API_PORT: 443 # default 443
+
+networks:
+  traefik:
+    external: true
