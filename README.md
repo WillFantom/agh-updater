@@ -30,14 +30,15 @@ See the example setup [here](/example/docker-compose.yml)!
 
 ## Configuration
 
-|       ENV Variable       | CLI Parameter |                       Description                        |      Default       | Required |
-| :----------------------: | :-----------: | :------------------------------------------------------: | :----------------: | :------: |
-|    `ADGUARD_USERNAME`    |    `-u <>`    |     Your AdGuard Home admin username for API access      |        N/A         |    ✅     |
-|    `ADGUARD_PASSWORD`    |    `-p <>`    |     Your AdGuard Home admin password for API access      |        N/A         |    ✅     |
-|     `ADGUARD_DOMAIN`     |    `-d <>`    |    Your AdGuard Home domain (without scheme or port)     |        N/A         |    ✅     |
-|   `TRAEFIK_CERT_JSON`    |    `-f <>`    |          Path to your Træfik cert storage file           |        N/A         |    ✅     |
-| `INTERVAL` (Docker only) |    `-i <>`    | ReUpdate the certs every X seconds (`0` if do only once) | 0 (`60` in Docker) |    ❌     |
-|                          |     `-e`      |       Exit update loop if an error is encountered        |      not-set       |    ❌     |
-|   `ADGUARD_API_SCHEME`   |               |    Scheme to use to access your AdGuard instance API     |      `https`       |    ❌     |
-|    `ADGUARD_API_PORT`    |               |         Port to access your AdGuard instance API         |       `443`        |    ❌     |
-|                          |     `-h`      |                      Print CLI Help                      |                    |    ❌     |
+|                ENV Variable                | CLI Parameter |                         Description                          |      Default       | Required |
+| :----------------------------------------: | :-----------: | :----------------------------------------------------------: | :----------------: | :------: |
+|             `ADGUARD_USERNAME`             |    `-u <>`    |       Your AdGuard Home admin username for API access        |        N/A         |    ✅     |
+|             `ADGUARD_PASSWORD`             |    `-p <>`    |       Your AdGuard Home admin password for API access        |        N/A         |    ✅     |
+|              `ADGUARD_DOMAIN`              |    `-d <>`    |      Your AdGuard Home domain (without scheme or port)       |        N/A         |    ✅     |
+|            `TRAEFIK_CERT_JSON`             |    `-f <>`    |            Path to your Træfik cert storage file             |        N/A         |    ✅     |
+|       `INTERVAL` <br> (Docker only)        |    `-i <>`    |   ReUpdate the certs every X seconds (`0` if do only once)   | 0 (`60` in Docker) |    ❌     |
+|                                            |     `-e`      |         Exit update loop if an error is encountered          |      not-set       |    ❌     |
+|            `ADGUARD_API_SCHEME`            |               |      Scheme to use to access your AdGuard instance API       |      `https`       |    ❌     |
+|             `ADGUARD_API_PORT`             |               |           Port to access your AdGuard instance API           |       `443`        |    ❌     |
+|                                            |     `-h`      |                        Print CLI Help                        |                    |    ❌     |
+| `TRAEFIK_CERT_RESOLVER` <br> (Docker only) |               | Name of the certificate resolver used for the adguard domain |     `[]` (any)     |    ❌     |
