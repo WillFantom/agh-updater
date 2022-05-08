@@ -1,6 +1,7 @@
 #!/bin/bash
 
 interval=0
+reattempt_interval=30
 exit_on_updatefail=0
 
 ## Command Line Args
@@ -66,19 +67,30 @@ while true; do
   fi
 
   echo $(date)
-  echo -e "\tBase64 Cert Chain (first 25 chars): ${certchain64:0:25}"
-  echo -e "\tBase64 Private Key (first 25 chars): ${privatekey64:0:25}"
+  echo -e "\tFound cert data from Traefik..."
+  echo -e "\t\tBase64 Cert Chain (first 25 chars): ${certchain64:0:25}"
+  echo -e "\t\tBase64 Private Key (first 25 chars): ${privatekey64:0:25}"
 
 
-  curl -X POST -s -f -o /dev/null -H "Content-Type: application/json" \
+  echo -e "\tCollecting current AdGuard Home TLS settings..."
+  currentSettings=$(curl -X GET -s -f -H "Content-Type: application/json" \
     -H "Authorization: Basic $credential" \
-    -d "{ \
-          \"server_name\": \"${ADGUARD_DOMAIN}\", \
-          \"certificate_chain\": \"$certchain64\", \
-          \"private_key\": \"$privatekey64\" \
-        }" \
-    ${ADGUARD_API_SCHEME:-https}://${ADGUARD_DOMAIN}:${ADGUARD_API_PORT:-443}/control/tls/configure \
-    || error "Request to set AdGuard Home TLS settings failed."
+    ${ADGUARD_API_SCHEME:-https}://${ADGUARD_DOMAIN}:${ADGUARD_API_PORT:-443}/control/tls/status)
+  [ $? -ne 0 ] && error "Request to get current AdGuard Home TLS settings failed." && sleep $reattempt_interval && continue
+
+  updatedSettings=" { \
+                      \"server_name\": \"${ADGUARD_DOMAIN}\", \
+                      \"certificate_chain\": \"$certchain64\", \
+                      \"private_key\": \"$privatekey64\" \
+                    }"
+  updatedSettings=$(echo "$currentSettings $updatedSettings" | jq -s add)
+
+  echo -e "\tSetting updated AdGuard Home TLS settings..."
+  curl -X POST -f -s -o /dev/null -H "Content-Type: application/json" \
+    -H "Authorization: Basic $credential" \
+    -d "$updatedSettings" \
+    ${ADGUARD_API_SCHEME:-https}://${ADGUARD_DOMAIN}:${ADGUARD_API_PORT:-443}/control/tls/configure
+  [ $? -ne 0 ] && error "Request to set AdGuard Home TLS settings failed." && sleep $reattempt_interval && continue
 
   if [ $interval -eq 0 ]; then
     echo "Done"; exit 0
