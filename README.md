@@ -1,4 +1,13 @@
-# AdGuard Home + Træfik
+# AdGuard Home Settings Updater
+
+This script can manage your AdGuard Home settings at regular intervals:
+
+ - Keep your block/allow lists updated, executing the list refresh on each run
+ - Sync your TLS cert settings with Træfik
+
+---
+
+## AdGuard Home + Træfik
 
 Always ensure your AdGuard Home TLS settings are in sync with your Træfik generated certs!
 
